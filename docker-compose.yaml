@@ -70,6 +70,7 @@ services:
 
 volumes:
   pg_data:
+    name: pg_data
 
 networks:
   app:

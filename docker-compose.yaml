@@ -8,6 +8,7 @@ services:
     networks:
       - db
       - app
+      - external
     depends_on:
       - postgres
     restart: unless-stopped

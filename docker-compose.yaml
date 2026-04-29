@@ -1,6 +1,6 @@
 services:
   api:
-    build: ../user-api
+    image: ghcr.io/naqqosh/zehngoh-api:latest
     container_name: api
     env_file: ./env/api.env
     volumes:
@@ -19,7 +19,7 @@ services:
         max-file: "2"
 
   ui:
-    build: ../zehngoh-ui
+    image: ghcr.io/naqqosh/zehngoh-ui:latest
     container_name: ui
     env_file: ./env/ui.env
     networks:

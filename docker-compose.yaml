@@ -100,7 +100,7 @@ services:
       - external
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -q0- http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O - http://localhost/health || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 3

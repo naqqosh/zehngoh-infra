@@ -118,6 +118,7 @@ services:
 volumes:
   pg_data:
     name: pg_data
+    external: true
 
 networks:
   app:
@@ -126,7 +127,7 @@ networks:
 
   db:
     name: db_net
-    internal: true
+    # internal: true
 
   external:
     name: external_net

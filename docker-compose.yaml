@@ -1,6 +1,7 @@
 services:
   api:
-    build: ../user-api
+    image: ghcr.io/naqqosh/zehngoh-api:latest
+    pull_policy: always
     container_name: api
     env_file: ./env/api.env
     volumes:
@@ -8,8 +9,22 @@ services:
     networks:
       - db
       - app
+      - external
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://127.0.0.1:' + process.env.PORT + '/api/health', (res) => {process.exit(res.statusCode === 200 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     restart: unless-stopped
     logging:
       driver: json-file
@@ -18,14 +33,28 @@ services:
         max-file: "2"
 
   ui:
-    build: ../zehngoh-ui
+    image: ghcr.io/naqqosh/zehngoh-ui:latest
+    pull_policy: always
     container_name: ui
     env_file: ./env/ui.env
     networks:
       - app
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://127.0.0.1:' + process.env.PORT, (res) => {console.log(res.statusCode); process.exit(res.statusCode === 200 ? 0 : 1)}).on('error', (e) => {console.log(e.message), process.exit(1)})",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     logging:
       driver: json-file
       options:
@@ -41,6 +70,18 @@ services:
     networks:
       - db
     restart: unless-stopped
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "psql -U myuser -d market_db -c 'SELECT 1' > /dev/null 2>&1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     logging:
       driver: json-file
       options:
@@ -50,18 +91,24 @@ services:
   nginx:
     image: nginx:alpine
     container_name: nginx
+    profiles: ["nginx"]
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - "./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro"
       - "/etc/letsencrypt:/etc/letsencrypt:ro"
+      - "./nginx/fallback.html:/var/www/errors/fallback.html"
     networks:
       - app
       - external
-    depends_on:
-      - ui
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
     logging:
       driver: json-file
       options:
@@ -70,6 +117,7 @@ services:
 
 volumes:
   pg_data:
+    name: pg_data
 
 networks:
   app:

@@ -99,6 +99,7 @@ services:
       - "./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro"
       - "/etc/letsencrypt:/etc/letsencrypt:ro"
       - "./nginx/fallback.html:/var/www/errors/fallback.html"
+      - "/etc/nginx/ssl:/etc/nginx/ssl:ro"
     networks:
       - app
       - external

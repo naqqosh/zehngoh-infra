@@ -16,15 +16,9 @@ Production Statistics:
 
 ## Architecture
 
-User
-↓
-Telegram Bot
-↓
-Next.js Web App
-↓
-NestJS API
-↓
-PostgreSQL
+User → Telegram Bot → Next.js Web App → NestJS API → PostgreSQL
+
+![Architecture diagram](https://github.com/user-attachments/assets/f8c34ea7-d366-4140-b38a-c2f5d109df9c)
 
 ## Infrastructure Stack
 

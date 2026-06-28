@@ -2,8 +2,6 @@
 
 Infrastructure repository for Zehngoh local commerce platform.
 
-🌐 Live Application: https://zehngoh.uz
-
 ## Overview
 
 Zehngoh is a Telegram-based local commerce and delivery platform serving rural communities in Uzbekistan.
